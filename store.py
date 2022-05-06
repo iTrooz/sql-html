@@ -48,8 +48,11 @@ while len(toParse) > 0:
 
     # Les attributs
     for k, v in node.attrs.items():
-        cursor.execute("INSERT INTO attrs (nodeID, attrName, attrValue) VALUES (?, ?, ?)",
-            (nodeID, node.name, parentNodeID))
+        print(k, v)
+
+        for attrV in (v if type(v) == list else (v,)):
+            cursor.execute("INSERT INTO attrs (nodeID, attrName, attrValue) VALUES (?, ?, ?)",
+                (nodeID, k, attrV))
 
     
     # Prepare for next nodes
