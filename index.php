@@ -42,12 +42,7 @@
 
         $lastVal = end($arr);
 
-        if($row["parentNodeID"]==$lastVal->id){
-            array_push($arr, new NodeInfo($row["nodeID"], $row["tagName"]));
-
-            // this is a child, so we close the start tag
-            // of the parent and start the child
-        }else if($row["nodeID"]!=$lastVal->id){
+        if($row["nodeID"]!=$lastVal->id){
             // the last node is finished, we have data on the child
             // of another parent in the stack
 
@@ -59,9 +54,11 @@
                 if(count($arr)==0){
                     die("Shouldn't happen : Len was 0");
                 }
-                $lastVal = array_pop($arr);
-
+                
+                $lastVal = end($arr);
                 if($row["parentNodeID"]==$lastVal->id)break;
+                array_pop($arr);
+
                 echo "checked with ".$lastVal->tagName."  ".$lastVal->id." and false\n";
                 // array should not underflow
             }
