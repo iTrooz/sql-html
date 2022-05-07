@@ -4,6 +4,9 @@
     $USER="root";
     $PASS="azerty123";
 
+    $VOID = array("area", "base", "br", "col", "embed", "hr", "img",
+    "input", "link", "meta", "param", "source", "track", "wbr");
+
     // Connect to DB
     $db = new PDO("mysql:host=" . $HOST . ";dbname=" . $DB_NAME, $USER, $PASS);
     // Display errors when occurs
@@ -12,7 +15,7 @@
     $uri = '/input.html';
 
     $ps = $db->prepare("SELECT
-    nodes.nodeID, nodes.parentNodeID, nodes.tagName
+    nodes.nodeID, nodes.parentNodeID, nodes.tagName, attrs.attrName, attrs.attrValue
     FROM pages
     JOIN nodes ON nodes.pageID=pages.pageID
     LEFT JOIN attrs ON nodes.nodeID = attrs.nodeID
@@ -28,7 +31,6 @@
         function __construct($id, $tagName){
             $this->id = $id;
             $this->tagName = $tagName;
-            echo "added ".$this->tagName." id ".$this->id."\n";
         }
     };
 
@@ -37,19 +39,17 @@
     $arr = array();
     array_push($arr, new NodeInfo(null, null));
 
+    echo "<!DOCTYPE html";
+
     while($row = $ps->fetch()){
-        echo "New iteration for ".$row["tagName"]."\n";
 
         $lastVal = end($arr);
 
         if($row["nodeID"]!=$lastVal->id){
-            // the last node is finished, we have data on the child
-            // of another parent in the stack
 
-            echo "Find parent of ".$row["tagName"]."  parent ".$row["parentNodeID"]."\n";
-            echo "Array is at start size of ".count($arr)."\n";
-            print_r($arr);
+            echo ">\n";
 
+            // new node : find the parent
             while(true){
                 if(count($arr)==0){
                     die("Shouldn't happen : Len was 0");
@@ -57,19 +57,30 @@
                 
                 $lastVal = end($arr);
                 if($row["parentNodeID"]==$lastVal->id)break;
+
+                if(!in_array($lastVal->tagName, $VOID)){
+                    echo "</".$lastVal->tagName.">\n";
+                }
                 array_pop($arr);
 
-                echo "checked with ".$lastVal->tagName."  ".$lastVal->id." and false\n";
-                // array should not underflow
             }
-            echo "found : ".$lastVal->tagName."\n";
             array_push($arr, new NodeInfo($row["nodeID"], $row["tagName"]));
-        }else{
-            echo "Add attribute to the same\n";
-            // else this is the same
+            echo "<".$row["tagName"];
         }
 
-        // add attribute
+        if($row["attrName"]!=null){
+            echo " ".$row["attrName"]."='".$row["attrValue"]."'";
+        }
+    }
+
+    echo ">\n";
+
+    // close the remainings tags
+    while(count($arr)>1){ // not 0 because the last value is null and must not be sent
+        $lastVal = array_pop($arr);
+        if(!in_array($lastVal->tagName, $VOID)){
+            echo "</".$lastVal->tagName.">\n";
+        }
     }
 
 ?>

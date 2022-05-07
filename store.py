@@ -23,6 +23,13 @@ db = mariadb.connect(
 db.autocommit = False
 cursor = db.cursor()
 
+
+# class A:
+#     pass
+# cursor = A()
+# cursor.execute = lambda x, y=0 : (x, y)
+# cursor.lastrowid = 0
+
 # Yeet les ex
 
 cursor.execute("DELETE FROM pages")
@@ -52,15 +59,14 @@ while len(toParse) > 0:
 
     # Les attributs
     for k, v in node.attrs.items():
-        print(k, v)
-
+        
         for attrV in (v if type(v) == list else (v,)):
             cursor.execute("INSERT INTO attrs (nodeID, attrName, attrValue) VALUES (?, ?, ?)",
                 (nodeID, k, attrV))
 
     
     # Prepare for next nodes
-    for childNode in node.find_all(recursive=False):
+    for childNode in reversed(node.find_all(recursive=False)):
         toParse.insert(0, (childNode, nodeID))
 
 
