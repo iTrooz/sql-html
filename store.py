@@ -23,6 +23,10 @@ db = mariadb.connect(
 db.autocommit = False
 cursor = db.cursor()
 
+# Yeet les ex
+
+cursor.execute("DELETE FROM pages")
+db.commit()
 
 # Parse HTML
 html = open(args.file).read()
@@ -57,7 +61,7 @@ while len(toParse) > 0:
     
     # Prepare for next nodes
     for childNode in node.find_all(recursive=False):
-        toParse.append((childNode, nodeID))
+        toParse.insert(0, (childNode, nodeID))
 
 
 db.commit()
