@@ -1,19 +1,25 @@
 <?php
+    // DB settings
     $HOST="localhost";
     $DB_NAME="test";
     $USER="root";
     $PASS="azerty123";
 
-    $VOID = array("area", "base", "br", "col", "embed", "hr", "img",
-    "input", "link", "meta", "param", "source", "track", "wbr");
-
     // Connect to DB
     $db = new PDO("mysql:host=" . $HOST . ";dbname=" . $DB_NAME, $USER, $PASS);
-    // Display errors when occurs
     $db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );
+
 
     $uri = '/input.html';
 
+    if(isset($_GET["uri"])){
+        $uri = $_GET["uri"];
+        if($uri[0]!="/")$uri = "/"+$uri;
+    }else{
+        $uri = "/index.html";
+    }
+
+    // Request a view of all nodes/attributes of the page
     $ps = $db->prepare("SELECT
     nodes.nodeID, nodes.parentNodeID, nodes.tagName, nodes.tagValue, attrs.attrName, attrs.attrValue
     FROM pages
@@ -23,6 +29,18 @@
     ORDER BY nodes.nodeID");
     $ps->bindParam(1, $uri);
     $ps->execute();
+
+    // If we didn't get any results, the page doesn't exist
+    if($ps->rowCount()==0){
+        echo "This page doesn't exist !";
+        return;
+    }
+
+
+    // generate HTML page
+
+    $VOID = array("area", "base", "br", "col", "embed", "hr", "img",
+    "input", "link", "meta", "param", "source", "track", "wbr");
 
     class NodeInfo{
         public $id;

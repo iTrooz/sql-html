@@ -23,17 +23,8 @@ db = mariadb.connect(
 db.autocommit = False
 cursor = db.cursor()
 
-
-# class A:
-#     pass
-# cursor = A()
-# cursor.execute = lambda x, y=0 : (x, y)
-# cursor.lastrowid = 0
-
-# Yeet les ex
-
-cursor.execute("DELETE FROM pages")
-db.commit()
+# Remove old data from the page
+cursor.execute("DELETE FROM pages WHERE uri=?", (args.uri,))
 
 # Parse HTML
 html = open(args.file).read()
