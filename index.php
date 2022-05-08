@@ -15,7 +15,7 @@
     $uri = '/input.html';
 
     $ps = $db->prepare("SELECT
-    nodes.nodeID, nodes.parentNodeID, nodes.tagName, attrs.attrName, attrs.attrValue
+    nodes.nodeID, nodes.parentNodeID, nodes.tagName, nodes.tagValue, attrs.attrName, attrs.attrValue
     FROM pages
     JOIN nodes ON nodes.pageID=pages.pageID
     LEFT JOIN attrs ON nodes.nodeID = attrs.nodeID
@@ -27,17 +27,19 @@
     class NodeInfo{
         public $id;
         public $tagName;
+        public $tagValue;
 
-        function __construct($id, $tagName){
+        function __construct($id, $tagName, $tagValue){
             $this->id = $id;
             $this->tagName = $tagName;
+            $this->tagValue = $tagValue;
         }
     };
 
 
     
     $arr = array();
-    array_push($arr, new NodeInfo(null, null));
+    array_push($arr, new NodeInfo(null, null, null));
 
     echo "<!DOCTYPE html";
 
@@ -47,7 +49,7 @@
 
         if($row["nodeID"]!=$lastVal->id){
 
-            echo ">\n";
+            echo ">".$lastVal->tagValue."\n";
 
             // new node : find the parent
             while(true){
@@ -61,10 +63,11 @@
                 if(!in_array($lastVal->tagName, $VOID)){
                     echo "</".$lastVal->tagName.">\n";
                 }
+
                 array_pop($arr);
 
             }
-            array_push($arr, new NodeInfo($row["nodeID"], $row["tagName"]));
+            array_push($arr, new NodeInfo($row["nodeID"], $row["tagName"], $row["tagValue"]));
             echo "<".$row["tagName"];
         }
 

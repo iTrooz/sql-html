@@ -53,8 +53,8 @@ while len(toParse) > 0:
 
     # Parse current node
 
-    cursor.execute("INSERT INTO nodes (pageID, tagName, parentNodeID) VALUES (?, ?, ?)",
-        (pageID, node.name, parentNodeID))
+    cursor.execute("INSERT INTO nodes (pageID, tagName, tagValue, parentNodeID) VALUES (?, ?, ?, ?)",
+        (pageID, node.name, node.string, parentNodeID))
     nodeID = cursor.lastrowid
 
     # Les attributs
