@@ -14,7 +14,7 @@
 
     if(isset($_GET["uri"])){
         $uri = $_GET["uri"];
-        if($uri[0]!="/")$uri = "/"+$uri;
+        if($uri[0]!="/")$uri = "/".$uri;
     }else{
         $uri = "/index.html";
     }
@@ -94,7 +94,10 @@
         }
     }
 
-    echo ">\n";
+    // finish the array
+
+    $lastVal = end($arr);
+    echo ">".$lastVal->tagValue."\n";
 
     // close the remainings tags
     while(count($arr)>1){ // not 0 because the last value is null and must not be sent
