@@ -1,7 +1,9 @@
 I was bored, so I've done this
 
 The principle is to store a HTML file in a database, using the relational model
+
 Theses database screens may help to understand :
+
 !["View of the data"](db.png)
 !["Table relations"](db_model.png)
 
